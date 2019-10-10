@@ -3,6 +3,7 @@ package com.jairaviles.mx.persistence.dao;
 import com.jairaviles.mx.persistence.entities.Officer;
 import com.jairaviles.mx.persistence.entities.Rank;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,12 @@ import java.util.Optional;
 public class JdbcOfficerDAO implements OfficerDAO {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert insertOfficer;
+
+    private RowMapper<Officer> officerMapper =
+            (rs, rowNum) -> new Officer(rs.getInt("id"),
+                                        Rank.valueOf(rs.getString("rank")),
+                                        rs.getString("first_name"),
+                                        rs.getString("last_name"));
 
     public JdbcOfficerDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -40,21 +47,13 @@ public class JdbcOfficerDAO implements OfficerDAO {
         if (!existsById(id)) return Optional.empty();
         return Optional.ofNullable(jdbcTemplate.queryForObject(
                 "SELECT * FROM officers WHERE id=?",
-                (rs, rowNum) -> new Officer(rs.getInt("id"),
-                                Rank.valueOf(rs.getString("rank")),
-                                rs.getString("first_name"),
-                                rs.getString("last_name")
-                ),
+                officerMapper,
                 id));
     }
 
     @Override
     public List<Officer> findAll() {
-        return jdbcTemplate.query("SELECT * FROM officers",
-                (rs, rowNum) -> new Officer(rs.getInt("id"),
-                                            Rank.valueOf(rs.getString("rank")),
-                                            rs.getString("first_name"),
-                                            rs.getString("last_name")));
+        return jdbcTemplate.query("SELECT * FROM officers", officerMapper);
     }
 
     @Override
