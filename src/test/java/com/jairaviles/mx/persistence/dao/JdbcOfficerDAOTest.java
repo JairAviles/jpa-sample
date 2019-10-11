@@ -5,6 +5,7 @@ import com.jairaviles.mx.persistence.entities.Rank;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 @ExtendWith(SpringExtension.class)
 @Transactional
 public class JdbcOfficerDAOTest {
+    @Qualifier("jdbcOfficerDAO")
     @Autowired
     private OfficerDAO dao;
 
